@@ -26,36 +26,43 @@ app.add_middleware(
 )
 
 TINYFISH_API_KEY = os.getenv("TINYFISH_API_KEY", "your_api_key_here")
-HEADERS = {
-    "Authorization": f"Bearer {TINYFISH_API_KEY}",
+SEARCH_HEADERS = {"X-API-Key": TINYFISH_API_KEY}
+FETCH_HEADERS = {
+    "X-API-Key": TINYFISH_API_KEY,
     "Content-Type": "application/json"
 }
+
+# Correct TinyFish API endpoints
+SEARCH_URL = "https://api.search.tinyfish.ai"
+FETCH_URL = "https://api.fetch.tinyfish.ai"
 
 
 def tinyfish_search(query: str, num_results: int = 10):
     """Search the live web using TinyFish Search API"""
-    response = requests.post(
-        "https://api.tinyfish.ai/v1/search",
-        json={"query": query, "num_results": num_results},
-        headers=HEADERS,
+    response = requests.get(
+        SEARCH_URL,
+        params={"query": query, "num_results": num_results},
+        headers=SEARCH_HEADERS,
         timeout=15
     )
     if response.status_code == 200:
         return response.json()
-    return {"error": f"Search failed: {response.status_code}", "results": []}
+    return {"error": f"Search failed: {response.status_code} - {response.text[:200]}", "results": []}
 
 
-def tinyfish_fetch(url: str):
+def tinyfish_fetch(urls):
     """Fetch full page content as clean markdown using TinyFish Fetch API"""
+    if isinstance(urls, str):
+        urls = [urls]
     response = requests.post(
-        "https://api.tinyfish.ai/v1/fetch",
-        json={"url": url},
-        headers=HEADERS,
-        timeout=15
+        FETCH_URL,
+        json={"urls": urls},
+        headers=FETCH_HEADERS,
+        timeout=20
     )
     if response.status_code == 200:
         return response.json()
-    return {"error": f"Fetch failed: {response.status_code}"}
+    return {"error": f"Fetch failed: {response.status_code} - {response.text[:200]}"}
 
 
 @app.get("/")
