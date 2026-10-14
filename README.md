@@ -1,5 +1,7 @@
 # 🐟 AI Job Portal Finder — Powered by TinyFish
 
+![AI Job Portal Finder Banner](banner.png)
+
 > **Find internships and real jobs from live career pages using TinyFish Search + Fetch APIs**
 > Built by [Rafia Minhaj](https://github.com/Rafiaminhaj) for TinyBounties Drop 001
 
